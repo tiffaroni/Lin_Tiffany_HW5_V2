@@ -49,7 +49,11 @@ namespace Lin_Tiffany_HW5_V2.Models
         }
 
         //TODO: ADD NAVIGATIONAL PROPERTIES
+
+        // each product can have many suppliers 
         public List<Supplier> Suppliers { get; set; }
+
+        // each product can have many orderdetails
         public List<OrderDetail> OrderDetails { get; set; }
 
     }

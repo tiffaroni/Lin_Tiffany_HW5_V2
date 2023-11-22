@@ -20,7 +20,11 @@ namespace Lin_Tiffany_HW5_V2.Models
         public Decimal ExtendedPrice { get; set; }
 
         //ADD NAVIGATIONAL PROPERTIES
+
+        // each orderdetail can only have one order 
         public Order Order { get; set; }
+
+        // each orderdetail can only have one product
         public Product Product { get; set; }
     }
 }

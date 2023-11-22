@@ -30,6 +30,8 @@ namespace Lin_Tiffany_HW5_V2.Models
         }
 
         //ADD NAVIGATIONAL PROPERTIES
+
+        // each supplier can have many products
         public List<Product> Products { get; set; }
 
     }

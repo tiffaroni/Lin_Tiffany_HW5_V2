@@ -50,8 +50,10 @@ namespace Lin_Tiffany_HW5_V2.Models
 
         //ADD NAVIGATIONAL PROPERTIES
 
+        // each order can have many order details 
         public List<OrderDetail> OrderDetails { get; set; }
 
+        // each order can only have one user (customer) 
         public AppUser User { get; set; }
 
     }
