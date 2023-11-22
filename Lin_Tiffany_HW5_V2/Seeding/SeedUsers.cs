@@ -23,9 +23,10 @@ namespace Lin_Tiffany_HW5_V2.Seeding
                     Email = "admin@example.com",
                     PhoneNumber = "(512)555-1234",
 
-                    //TODO: Add additional fields that you created on the AppUser class
-                    //FirstName is included as an example
-                    FirstName = "Admin"
+                    // Add additional fields that you created on the AppUser class
+                    // FirstName is included as an example
+                    FirstName = "Admin",
+                    LastName = "Example"
 
                 },
                 Password = "Abc123!",
@@ -42,9 +43,10 @@ namespace Lin_Tiffany_HW5_V2.Seeding
                     Email = "bevo@example.com",
                     PhoneNumber = "(512)555-5555",
 
-                    //TODO: Add additional fields that you created on the AppUser class
-                    //FirstName is included as an example
-                    FirstName = "Bevo"
+                    // Add additional fields that you created on the AppUser class
+                    // FirstName is included as an example
+                    FirstName = "Bevo",
+                    LastName = "Longhorn"
 
                 },
                 Password = "Password123!",

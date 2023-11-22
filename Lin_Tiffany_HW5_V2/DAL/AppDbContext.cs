@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 
 using Lin_Tiffany_HW5_V2.Models;
@@ -20,6 +20,14 @@ namespace Lin_Tiffany_HW5_V2.DAL
             builder.HasServiceTier("Basic");
             base.OnModelCreating(builder);
         }
+
+        public DbSet<Lin_Tiffany_HW5_V2.Models.OrderDetail> OrderDetail { get; set; } = default!;
+
+        public DbSet<Lin_Tiffany_HW5_V2.Models.Product> Product { get; set; } = default!;
+
+        public DbSet<Lin_Tiffany_HW5_V2.Models.Supplier> Supplier { get; set; } = default!;
+
+        public DbSet<Lin_Tiffany_HW5_V2.Models.Order> Order { get; set; } = default!;
 
         //TODO: Add Dbsets here.  Products is included as an example.  
         //public DbSet<Product> Products { get; set; }
