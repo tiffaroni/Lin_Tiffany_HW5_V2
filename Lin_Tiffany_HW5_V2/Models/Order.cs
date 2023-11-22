@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HW5Example.Models;
+using Lin_Tiffany_HW5_V2.Models;
 
-namespace HW5Example.Models
+namespace Lin_Tiffany_HW5_V2.Models
 {
     public class Order
     {
@@ -48,6 +48,11 @@ namespace HW5Example.Models
             }
         }
 
-	//ADD NAVIGATIONAL PROPERTIES
+        //ADD NAVIGATIONAL PROPERTIES
+
+        public List<OrderDetail> OrderDetails { get; set; }
+
+        public AppUser User { get; set; }
+
     }
 }

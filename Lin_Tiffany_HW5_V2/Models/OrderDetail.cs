@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HW5Example.Models;
+using Lin_Tiffany_HW5_V2.Models;
 
-namespace HW5Example.Models
+namespace Lin_Tiffany_HW5_V2.Models
 {
     public class OrderDetail
     {
@@ -20,5 +20,7 @@ namespace HW5Example.Models
         public Decimal ExtendedPrice { get; set; }
 
         //ADD NAVIGATIONAL PROPERTIES
+        public Order Order { get; set; }
+        public Product Product { get; set; }
     }
 }

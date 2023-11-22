@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HW5Example.Models;
+using Lin_Tiffany_HW5_V2.Models;
 
-namespace HW5Example.Models
+namespace Lin_Tiffany_HW5_V2.Models
 {
     public enum ProductType
     {
@@ -30,12 +30,27 @@ namespace HW5Example.Models
         [Display(Name = "Product Type:")]
         public ProductType ProductType { get; set; }
 
+        // It will create new (empty) list of Books if the navigational property is null.
+        // //This is helpful because you can’t iterate over a null list
+        // //You can’t add or remove from a null list, and you can’t count a null list.
+        // //Putting this code into a constructor prevents null reference errors throughout the application.
+
         public Product()
         {
-            Suppliers ??= new List<Supplier>();
-            OrderDetails ??= new List<OrderDetail>();
+            if (Suppliers == null)
+            {
+                Suppliers = new List<Supplier>();
+            }
+
+            if (OrderDetails == null)
+            {
+                OrderDetails = new List<OrderDetail>();
+            }
         }
 
-	//ADD NAVIGATIONAL PROPERTIES
+        //TODO: ADD NAVIGATIONAL PROPERTIES
+        public List<Supplier> Suppliers { get; set; }
+        public List<OrderDetail> OrderDetails { get; set; }
+
     }
 }

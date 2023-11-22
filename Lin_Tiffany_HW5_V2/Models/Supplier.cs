@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HW5Example.Models;
+using Lin_Tiffany_HW5_V2.Models;
 
-namespace HW5Example.Models
+namespace Lin_Tiffany_HW5_V2.Models
 {
     public class Supplier
     {
@@ -28,8 +28,9 @@ namespace HW5Example.Models
                 Products = new List<Product>();
             }
         }
-	
-	//ADD NAVIGATIONAL PROPERTIES
+
+        //ADD NAVIGATIONAL PROPERTIES
+        public List<Product> Products { get; set; }
 
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1706.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lin_Tiffany_HW5_V2", "Lin_Tiffany_HW5_V2\Lin_Tiffany_HW5_V2.csproj", "{A1C2249E-B768-4870-9465-05CA2D6949DA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D160734-0BF3-4EEB-8E87-8E5ACBE332D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
