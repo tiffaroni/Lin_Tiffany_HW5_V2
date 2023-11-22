@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lin_Tiffany_HW5_V2.DAL;
 using Lin_Tiffany_HW5_V2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lin_Tiffany_HW5_V2.Controllers
 {
+    //HAVE to be an admin to access the entire controller and create/manage suppliers
+    //you'll get an error is you're not in that role
+    [Authorize(Roles = "Admin")]
     public class SuppliersController : Controller
     {
         private readonly AppDbContext _context;
@@ -118,42 +122,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
             return View(supplier);
         }
 
-        // GET: Suppliers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Supplier == null)
-            {
-                return NotFound();
-            }
-
-            var supplier = await _context.Supplier
-                .FirstOrDefaultAsync(m => m.SupplierID == id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return View(supplier);
-        }
-
-        // POST: Suppliers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Supplier == null)
-            {
-                return Problem("Entity set 'AppDbContext.Supplier'  is null.");
-            }
-            var supplier = await _context.Supplier.FindAsync(id);
-            if (supplier != null)
-            {
-                _context.Supplier.Remove(supplier);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool SupplierExists(int id)
         {

@@ -23,15 +23,26 @@
                     <li class="nav-item">
                         <a asp-controller="Products" asp-action="Index" class="nav-link">Products</a>
                     </li>
+
                     @if (User.Identity.IsAuthenticated)
                     {
-                        @if (User.IsInRole("Admin"))
+                        <li class="nav-item">
+                            <a asp-controller="Orders" asp-action="Index" class="nav-link">Orders</a>
+                        </li>
+
+                        if (User.IsInRole("Admin"))
                         {
-                            <li>
+                            <li class="nav-item">
+                                <a asp-controller="Suppliers" asp-action="Index" class="nav-link">Suppliers</a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a asp-controller="RoleAdmin" asp-action="Index" class="nav-link">Manage Users</a>
                             </li>
                         }
+
                     }
+      
                 </ul>
             </div>
             @await Html.PartialAsync("_LoginPartial")

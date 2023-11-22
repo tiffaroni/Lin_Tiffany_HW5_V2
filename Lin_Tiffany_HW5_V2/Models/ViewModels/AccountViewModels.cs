@@ -40,12 +40,15 @@ namespace Lin_Tiffany_HW5_V2.Models
         public string PhoneNumber { get; set; }
 
 
-        //TODO: Add any fields that you need for creating a new user
-        //First name is provided as an example
+        // Add any fields that you need for creating a new user
+        // First name is provided as an example
         [Required(ErrorMessage = "First name is required.")]
         [Display(Name = "First Name")]
         public String FirstName { get; set; }
 
+        [Required(ErrorMessage = "Last name is required.")]
+        [Display(Name = "Last Name")]
+        public String LastName { get; set; }
 
         //NOTE: Here is the logic for putting in a password
         [Required]

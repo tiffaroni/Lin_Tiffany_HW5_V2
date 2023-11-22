@@ -1,21 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
-using Lin_Tiffany_HW5_V2.DAL;
+﻿using Lin_Tiffany_HW5_V2.DAL;
 using Lin_Tiffany_HW5_V2.Models;
 using Lin_Tiffany_HW5_V2.Utilities;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lin_Tiffany_HW5_V2.Controllers
 {
+    //to manage account, we want everyone to be authenticated
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly PasswordValidator<AppUser> _passwordValidator;
-        private readonly AppDbContext _context;
+        private SignInManager<AppUser> _signInManager;
+        private UserManager<AppUser> _userManager;
+        private PasswordValidator<AppUser> _passwordValidator;
+        private AppDbContext _context;
 
         public AccountController(AppDbContext appDbContext, UserManager<AppUser> userManager, SignInManager<AppUser> signIn)
         {
@@ -57,7 +60,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 //TODO: Add the rest of the custom user fields here
                 //FirstName is included as an example
                 FirstName = rvm.FirstName,
-
+                LastName = rvm.LastName
             };
 
             //create AddUserModel
@@ -97,9 +100,11 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         }
 
         // GET: /Account/Login
+        //of course, anyone can try and login
         [AllowAnonymous]
         public IActionResult Login(string returnUrl)
         {
+            //this is a pre-build method User.Identity.IsAuthenticated
             if (User.Identity.IsAuthenticated) //user has been redirected here from a page they're not authorized to see
             {
                 return View("Error", new string[] { "Access Denied" });
@@ -110,6 +115,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         }
 
         // POST: /Account/Login
+        //this is the method that actually logs you in, so still needs to allowanonymous
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -117,7 +123,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         {
             //if user forgot to include user name or password,
             //send them back to the login page to try again
-            if (ModelState.IsValid == false)
+            //if (ModelState.IsValid == false)
+            //{
+            //    return View(lvm);
+            //}
+
+            if (lvm.Email == null || lvm.Password == null)
             {
                 return View(lvm);
             }
@@ -139,11 +150,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 //send user back to login page to try again
                 return View(lvm);
             }
-        }
-
-        public IActionResult AccessDenied()
-        {
-            return View("Error", new string[] { "You are not authorized for this resource" });
         }
 
         //GET: Account/Index
@@ -172,6 +178,13 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         // GET: /Account/ChangePassword
         public ActionResult ChangePassword()
         {
+            //don't let the user change the password for the default users
+            //this will keep the sample working for everyone
+            if (User.Identity.Name == "admin@example.com" || User.Identity.Name == "bevo@example.com")
+            {
+                return View("Error", new string[] { "You cannot change the password for the default users." });
+            }
+
             return View();
         }
 
@@ -182,6 +195,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel cpvm)
         {
+            if (User.Identity.Name == "admin@example.com" || User.Identity.Name == "bevo@example.com")
+            {
+                return View("Error", new string[] { "You cannot change the password for the default users." });
+            }
+
+
             //if user forgot a field, send them back to 
             //change password page to try again
             if (ModelState.IsValid == false)
@@ -215,6 +234,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 //send the user back to the change password page to try again
                 return View(cpvm);
             }
+        }
+
+        //GET:/Account/AccessDenied
+        public IActionResult AccessDenied(String ReturnURL)
+        {
+            return View("Error", new string[] { "Access is denied" });
         }
 
         // POST: /Account/LogOff
