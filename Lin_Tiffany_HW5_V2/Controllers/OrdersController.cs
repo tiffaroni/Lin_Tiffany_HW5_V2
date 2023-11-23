@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Lin_Tiffany_HW5_V2.DAL;
 using Lin_Tiffany_HW5_V2.Models;
 using Microsoft.AspNetCore.Authorization;
+using Lin_Tiffany_HW5_V2.Utilities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lin_Tiffany_HW5_V2.Controllers
 {
@@ -17,10 +19,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
     public class OrdersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(AppDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Orders
@@ -104,9 +108,16 @@ namespace Lin_Tiffany_HW5_V2.Controllers
 
 
         // GET: Orders/Create
+        [HttpGet]
         [Authorize(Roles = "Customer")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (User.IsInRole("Customer"))
+            {
+                Order ord = new Order();
+                ord.User = await _userManager.FindByNameAsync(User.Identity.Name);
+                return View(ord);
+            }
             return View();
         }
 
@@ -114,16 +125,41 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OrderID,OrderNumber,OrderDate,OrderNotes")] Order order)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(order);
+            //if (ModelState.IsValid)
+            //{
+            //    _context.Add(order);
+            //    await _context.SaveChangesAsync();
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //return View(order);
+
+
+            //Find the next registration number from the utilities class
+            order.OrderNumber = Utilities.GenerateNextOrderNumber.GetNextOrderNumber(_context);
+
+            //Set the date of this order
+            order.OrderDate = DateTime.Now;
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            order.User = currentUser;
+
+            ////Associate the registration with the logged-in customer
+            //order.User = await _userManager.FindByNameAsync(order.User.UserName);
+
+
+            //if code gets this far, add the registration to the database
+            _context.Add(order);
+            await _context.SaveChangesAsync();
+
+            //send the user on to the action that will allow them to 
+            //create a registration detail.  Be sure to pass along the RegistrationID
+            //that you created when you added the registration to the database above
+            return RedirectToAction("Create", "OrderDetails", new { orderID = order.OrderID });
         }
 
         // GET: Orders/Edit/5
@@ -134,7 +170,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order.FindAsync(id);
+            //find the registration in the database, and be sure to include details
+            Order order = _context.Orders
+                        .Include(r => r.OrderDetails)
+                        .ThenInclude(r => r.Product)
+                        .Include(r => r.User)
+                        .FirstOrDefault(r => r.OrderID == id);
             if (order == null)
             {
                 return NotFound();
@@ -149,70 +190,75 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("OrderID,OrderNumber,OrderDate,OrderNotes")] Order order)
         {
+            //this is a security measure to make sure the user is editing the correct registration
             if (id != order.OrderID)
             {
-                return NotFound();
+                return View("Error", new String[] { "There was a problem editing this order. Try again!" });
             }
 
-            if (ModelState.IsValid)
+            //if there is something wrong with this order, try again
+            if (ModelState.IsValid == false)
             {
-                try
-                {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.OrderID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(order);
-        }
-
-        // GET: Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Order == null)
-            {
-                return NotFound();
+                return View(order);
             }
 
-            var order = await _context.Order
-                .FirstOrDefaultAsync(m => m.OrderID == id);
-            if (order == null)
+            //if code gets this far, update the record
+            try
             {
-                return NotFound();
+                //find the record in the database
+                Order dbOrder = _context.Orders.Find(order.OrderID);
+
+                //update the notes
+                dbOrder.OrderNotes = order.OrderNotes;
+
+                _context.Update(dbOrder);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new String[] { "There was an error updating this order!", ex.Message });
             }
 
-            return View(order);
-        }
-
-        // POST: Orders/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Order == null)
-            {
-                return Problem("Entity set 'AppDbContext.Order'  is null.");
-            }
-            var order = await _context.Order.FindAsync(id);
-            if (order != null)
-            {
-                _context.Order.Remove(order);
-            }
-            
-            await _context.SaveChangesAsync();
+            //send the user to the Registrations Index page.
             return RedirectToAction(nameof(Index));
         }
+
+        //// GET: Orders/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null || _context.Order == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var order = await _context.Order
+        //        .FirstOrDefaultAsync(m => m.OrderID == id);
+        //    if (order == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(order);
+        //}
+
+        //// POST: Orders/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    if (_context.Order == null)
+        //    {
+        //        return Problem("Entity set 'AppDbContext.Order'  is null.");
+        //    }
+        //    var order = await _context.Order.FindAsync(id);
+        //    if (order != null)
+        //    {
+        //        _context.Order.Remove(order);
+        //    }
+            
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool OrderExists(int id)
         {

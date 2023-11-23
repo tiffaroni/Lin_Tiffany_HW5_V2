@@ -26,6 +26,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.OrderNotes)
             </th>
+            <th>
+                Order Total
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -41,6 +44,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.OrderNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderTotal)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.OrderID">Edit</a> |
