@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Lin_Tiffany_HW5_V2.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Lin_Tiffany_HW5_V2.Models
 {
@@ -11,6 +12,7 @@ namespace Lin_Tiffany_HW5_V2.Models
         [Display(Name = "Used Paperback")] Used_Paperback,
         Other
     }
+
     public class Product
     {
         public Int32 ProductID { get; set; }
@@ -55,6 +57,7 @@ namespace Lin_Tiffany_HW5_V2.Models
 
         // each product can have many orderdetails
         public List<OrderDetail> OrderDetails { get; set; }
+
 
     }
 }

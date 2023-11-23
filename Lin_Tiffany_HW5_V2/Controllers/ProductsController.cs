@@ -36,16 +36,22 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Product == null)
+            //id was not specified - show the user an error
+            if (id == null)
             {
-                return NotFound();
+                return View("Error", new string[] { "Please specify a product to view!" });
             }
 
-            var product = await _context.Product
+            //find the course in the database
+            //be sure to include the relevant navigational data
+            Product product = await _context.Product
+                .Include(c => c.Suppliers)
                 .FirstOrDefaultAsync(m => m.ProductID == id);
+
+            //course was not found in the database
             if (product == null)
             {
-                return NotFound();
+                return View("Error", new string[] { "That product was not found in the database." });
             }
 
             return View(product);

@@ -39,8 +39,12 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 return NotFound();
             }
 
-            var supplier = await _context.Supplier
+            //find the department in the database
+            Supplier supplier = await _context.Suppliers
+                .Include(d => d.Products)
                 .FirstOrDefaultAsync(m => m.SupplierID == id);
+
+
             if (supplier == null)
             {
                 return NotFound();
@@ -79,7 +83,9 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 return NotFound();
             }
 
-            var supplier = await _context.Supplier.FindAsync(id);
+            //find the department in the database
+            Supplier supplier = await _context.Suppliers.FindAsync(id);
+
             if (supplier == null)
             {
                 return NotFound();
@@ -99,27 +105,25 @@ namespace Lin_Tiffany_HW5_V2.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if the user messed up, send them back to the view to try again
+            if (ModelState.IsValid == false)
             {
-                try
-                {
-                    _context.Update(supplier);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SupplierExists(supplier.SupplierID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(supplier);
             }
-            return View(supplier);
+
+            //if code gets this far, make the updates
+            try
+            {
+                _context.Update(supplier);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new String[] { "There was a problem editing this supplier.", ex.Message });
+            }
+
+            //send the user back to the view with all the departments
+            return RedirectToAction(nameof(Index));
         }
 
 
