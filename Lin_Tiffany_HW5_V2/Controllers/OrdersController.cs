@@ -28,7 +28,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             //return _context.Order != null ? 
             //            View(await _context.Order.ToListAsync()) :
@@ -43,8 +43,9 @@ namespace Lin_Tiffany_HW5_V2.Controllers
             if (User.IsInRole("Admin"))
             {
                 orders = _context.Orders
-                                .Include(r => r.OrderDetails)
-                                .ToList();
+                        .Include(r => r.OrderDetails)
+                            .ThenInclude(od => od.Product)
+                        .ToList();
             }
             else //user is a customer, so only display their records
             //registration is assocated with a particular user (look on the registration model class)
@@ -52,6 +53,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
             {
                 orders = _context.Orders
                                 .Include(r => r.OrderDetails)
+                                    .ThenInclude(od => od.Product)
                                 .Where(r => r.User.UserName == User.Identity.Name)
                                 .ToList();
             }
@@ -63,20 +65,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            //if (id == null || _context.Order == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var order = await _context.Order
-            //    .FirstOrDefaultAsync(m => m.OrderID == id);
-            //if (order == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(order);
-
             //the user did not specify a registration to view
             if (id == null)
             {
@@ -86,7 +74,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
             //find the registration in the database
             Order order = await _context.Orders
                                 .Include(r => r.OrderDetails)
-                                .ThenInclude(r => r.Product)
+                                    .ThenInclude(od => od.Product)
                                 .Include(r => r.User)
                                 .FirstOrDefaultAsync(m => m.OrderID == id);
 
@@ -129,14 +117,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OrderID,OrderNumber,OrderDate,OrderNotes")] Order order)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    _context.Add(order);
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(order);
-
 
             //Find the next registration number from the utilities class
             order.OrderNumber = Utilities.GenerateNextOrderNumber.GetNextOrderNumber(_context);
@@ -150,7 +130,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
 
             ////Associate the registration with the logged-in customer
             //order.User = await _userManager.FindByNameAsync(order.User.UserName);
-
 
             //if code gets this far, add the registration to the database
             _context.Add(order);

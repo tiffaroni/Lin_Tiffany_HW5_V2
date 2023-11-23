@@ -20,7 +20,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         }
 
         // GET: OrderDetails
-        public async Task<IActionResult> Index(int? orderID)
+        public IActionResult Index(int? orderID)
         {
             if (orderID == null)
             {
@@ -35,24 +35,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
 
             return View(ods);
         }
-
-        //// GET: OrderDetails/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null || _context.OrderDetail == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var orderDetail = await _context.OrderDetail
-        //        .FirstOrDefaultAsync(m => m.OrderDetailID == id);
-        //    if (orderDetail == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(orderDetail);
-        //}
 
         // GET: OrderDetails/Create
         public IActionResult Create(int orderID)
@@ -80,21 +62,9 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderDetail orderDetail, int SelectedProduct)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    _context.Add(orderDetail);
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(orderDetail);
-
-
-
-
-
 
             //if user has not entered all fields, send them back to try again
-            if (ModelState.IsValid == false)
+            if (SelectedProduct == null || orderDetail.Quantity == null)
             {
                 ViewBag.AllProducts = GetAllProducts();
                 return View(orderDetail);
@@ -125,17 +95,6 @@ namespace Lin_Tiffany_HW5_V2.Controllers
             _context.Add(orderDetail);
             await _context.SaveChangesAsync();
 
-            ////Send the email to confirm order details have been added
-            //try
-            //{
-            //    String emailBody = "Hello!\n\nThank you for your registration\n\n Course: " + dbCourse.CourseName + "\n\nTotal Cost: $" + registrationDetail.TotalFees;
-            //    Utilities.EmailMessaging.SendEmail("Longhorn Code Academy - Registration Created", emailBody);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return View("Error", new String[] { "There was a problem sending the email", ex.Message });
-            //}
-
             //send the user to the details page for this registration
             return RedirectToAction("Details", "Orders", new { id = orderDetail.Order.OrderID });
         }
@@ -143,19 +102,19 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         // GET: OrderDetails/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.OrderDetail == null)
+            if (id == null)
             {
-                return NotFound();
+                return View("Error", new String[] { "Please specify a order detail to edit!" });
             }
 
             //find the registration detail
             OrderDetail orderDetail = await _context.OrderDetails
-                                                   .Include(rd => rd.Product)
-                                                   .Include(rd => rd.Order)
-                                                   .FirstOrDefaultAsync(rd => rd.OrderDetailID == id);
+                                    .Include(rd => rd.Product)
+                                    .Include(rd => rd.Order)
+                                    .FirstOrDefaultAsync(rd => rd.OrderDetailID == id);
             if (orderDetail == null)
             {
-                return NotFound();
+                return View("Error", new String[] { "This order detail was not found" });
             }
             return View(orderDetail);
         }
@@ -165,7 +124,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderDetailID,Quantity,ProductPrice,ExtendedPrice")] OrderDetail orderDetail)
+        public async Task<IActionResult> Edit(int id, OrderDetail orderDetail)
         {
             //this is a security check to make sure they are editing the correct record
             if (id != orderDetail.OrderDetailID)
@@ -175,6 +134,7 @@ namespace Lin_Tiffany_HW5_V2.Controllers
 
             //create a new registration detail
             OrderDetail dbOD;
+
             //if code gets this far, update the record
             try
             {
