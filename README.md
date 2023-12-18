@@ -1,4 +1,4 @@
-# MIS 333K Homework 5: Order Entry Site
+# MIS 333K Order Entry Site
 
 ## Overview
 
